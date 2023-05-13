@@ -21,7 +21,7 @@ const Ffmpeg = () => {
     ffmpeg.FS(
       "writeFile",
       "test.mov",
-      await fetchFile("http://localhost:5173/test.mov")
+      await fetchFile(new URL("/test.mov", document.location).href)
     );
     // ffmpeg.FS("writeFile", name, await fetchFile(files[0]));
     await ffmpeg.run("-i", "test.mov", "output.mp4");
