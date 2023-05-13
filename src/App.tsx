@@ -4,6 +4,8 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 import MyVideoConverter from "./MyVideoConverter";
 import Ffmpeg from "./components/Ffmpeg";
+import Form from "./components/Form";
+import FfmpegForm from "./components/FfmpegForm";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -11,7 +13,9 @@ function App() {
   return (
     <>
       {/* <MyVideoConverter /> */}
-      <Ffmpeg />
+      {/* <Ffmpeg /> */}
+      {/* <Form /> */}
+      <FfmpegForm />
       <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />

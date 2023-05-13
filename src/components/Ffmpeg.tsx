@@ -13,7 +13,6 @@ const Ffmpeg = () => {
         corePath:
           "https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js",
       });
-      // await ffmpeg.load();
     }
     if (!ffmpeg.isLoaded()) {
       await ffmpeg.load();
@@ -21,7 +20,7 @@ const Ffmpeg = () => {
     ffmpeg.FS(
       "writeFile",
       "test.mov",
-      await fetchFile(new URL("/test.mov", document.location).href)
+      await fetchFile(new URL("/assets/test.mov", document.location).href)
     );
     // ffmpeg.FS("writeFile", name, await fetchFile(files[0]));
     await ffmpeg.run("-i", "test.mov", "output.mp4");
