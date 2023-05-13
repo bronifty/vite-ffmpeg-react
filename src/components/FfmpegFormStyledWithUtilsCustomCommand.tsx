@@ -6,7 +6,8 @@ const FfmpegFormStyledWithUtilsCustomCommand = () => {
   const [videoElementSrc, setVideoElementSrc] = useState("");
   const [message, setMessage] = useState("");
   const [operation, setOperation] = useState("transcode");
-  const [customText, setCustomText] = useState("");
+  const [customCommand, setCustomCommand] = useState("");
+  const [outputType, setOutputType] = useState("image");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -30,9 +31,13 @@ const FfmpegFormStyledWithUtilsCustomCommand = () => {
     console.log(event.target.value);
   };
 
-  const handleCustomTextChange = (event) => {
-    setCustomText(event.target.value);
+  const handlecustomCommandChange = (event) => {
+    setCustomCommand(event.target.value);
     console.log(event.target.value);
+  };
+
+  const handleOutputTypeChange = (event) => {
+    setOutputType(event.target.value);
   };
 
   return (
@@ -58,14 +63,14 @@ const FfmpegFormStyledWithUtilsCustomCommand = () => {
 
         {operation === "custom" && (
           <div>
-            <label className="font-semibold" htmlFor="customText">
+            <label className="font-semibold" htmlFor="customCommand">
               Custom Ffmpeg Command:
             </label>
             <textarea
-              id="customText"
-              name="customText"
-              value={customText}
-              onChange={handleCustomTextChange}
+              id="customCommand"
+              name="customCommand"
+              value={customCommand}
+              onChange={handlecustomCommandChange}
               className="p-2 mt-6 border h-36 border-gray-300 rounded custom-textfield"
             />
           </div>
