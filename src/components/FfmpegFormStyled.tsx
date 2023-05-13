@@ -2,7 +2,7 @@ import React, { useState } from "react";
 const { createFFmpeg, fetchFile } = FFmpeg;
 let ffmpeg = null;
 
-const FileUploadForm = () => {
+const FfmpegFormStyled = () => {
   const [imgElementSrc, setImgElementSrc] = useState("");
   const [videoElementSrc, setVideoElementSrc] = useState("");
   const [message, setMessage] = useState("");
@@ -78,39 +78,59 @@ const FileUploadForm = () => {
   };
 
   return (
-    <div>
-      <form id="mediaForm" onSubmit={handleSubmit}>
-        <select id="operation">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <form
+        id="mediaForm"
+        onSubmit={handleSubmit}
+        className="grid gap-6 p-8 mt-5 bg-white rounded shadow-lg w-96">
+        <label className="font-semibold" htmlFor="operation">
+          Operation
+        </label>
+        <select id="operation" className="p-2 border border-gray-300 rounded">
           <option value="transcode" selected>
             Transcode
           </option>
           <option value="screenshot">Screenshot</option>
         </select>
-        <label>
+
+        <label className="font-semibold" htmlFor="fileInput">
           Upload file:
-          <input type="file" name="fileInput" />
         </label>
-        <button type="submit">Submit</button>
+        <input
+          id="fileInput"
+          type="file"
+          name="fileInput"
+          className="p-2 border border-gray-300 rounded"
+        />
+
+        <button
+          type="submit"
+          className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Submit
+        </button>
       </form>
+
       <div>
         {message && (
-          <div style={{ color: "red", height: "200px", width: "100%" }}>
+          <div className="mt-5 p-2 w-full h-48 text-white bg-red-500">
             {message}
           </div>
         )}
       </div>
+
       {imgElementSrc && (
-        <img src={imgElementSrc} style={{ height: "200px", width: "200px" }} />
+        <img className="mt-5 h-48 w-48 object-cover" src={imgElementSrc} />
       )}
+
       {videoElementSrc && (
         <video
+          className="mt-5 h-48 w-48 object-cover"
           src={videoElementSrc}
           controls
-          style={{ height: "200px", width: "200px" }}
         />
       )}
     </div>
   );
 };
 
-export default FileUploadForm;
+export default FfmpegFormStyled;
