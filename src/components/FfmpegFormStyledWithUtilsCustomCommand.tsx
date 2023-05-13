@@ -38,6 +38,7 @@ const FfmpegFormStyledWithUtilsCustomCommand = () => {
 
   const handleOutputTypeChange = (event) => {
     setOutputType(event.target.value);
+    console.log(event.target.value);
   };
 
   return (
@@ -54,26 +55,39 @@ const FfmpegFormStyledWithUtilsCustomCommand = () => {
           value={operation}
           onChange={handleOperationChange}
           className="p-2 border border-gray-300 rounded">
-          <option value="transcode" selected>
-            Transcode
-          </option>
+          <option value="transcode">Transcode</option>
           <option value="screenshot">Screenshot</option>
           <option value="custom">Custom</option>
         </select>
 
         {operation === "custom" && (
-          <div>
-            <label className="font-semibold" htmlFor="customCommand">
-              Custom Ffmpeg Command:
+          <>
+            <div>
+              <label className="font-semibold" htmlFor="customCommand">
+                Custom Ffmpeg Command:
+              </label>
+              <textarea
+                id="customCommand"
+                name="customCommand"
+                value={customCommand}
+                onChange={handlecustomCommandChange}
+                className="p-2 mt-6 border h-36 border-gray-300 rounded custom-textfield"
+              />
+            </div>
+
+            <label className="font-semibold" htmlFor="outputType">
+              Output Type:
             </label>
-            <textarea
-              id="customCommand"
-              name="customCommand"
-              value={customCommand}
-              onChange={handlecustomCommandChange}
-              className="p-2 mt-6 border h-36 border-gray-300 rounded custom-textfield"
-            />
-          </div>
+            <select
+              id="outputType"
+              name="outputType"
+              className="p-2 border border-gray-300 rounded"
+              value={outputType}
+              onChange={handleOutputTypeChange}>
+              <option value="image">Image</option>
+              <option value="video">Video</option>
+            </select>
+          </>
         )}
 
         <label className="font-semibold" htmlFor="fileInput">
