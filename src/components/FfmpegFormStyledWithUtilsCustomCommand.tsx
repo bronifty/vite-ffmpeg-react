@@ -42,12 +42,12 @@ const FfmpegFormStyledWithUtilsCustomCommand = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900">
       <form
         id="mediaForm"
         onSubmit={handleSubmit}
-        className="grid gap-6 p-8 mt-5 bg-white rounded shadow-lg w-96">
-        <label className="font-semibold" htmlFor="operation">
+        className="grid gap-6 p-8 mt-5 bg-gray-900 rounded shadow-lg w-96">
+        <label className="font-semibold text-gray-200" htmlFor="operation">
           Operation
         </label>
         <select
@@ -63,7 +63,9 @@ const FfmpegFormStyledWithUtilsCustomCommand = () => {
         {operation === "custom" && (
           <>
             <div>
-              <label className="font-semibold" htmlFor="customCommand">
+              <label
+                className="font-semibold text-gray-200"
+                htmlFor="customCommand">
                 Custom Ffmpeg Command:
               </label>
               <textarea
@@ -75,7 +77,7 @@ const FfmpegFormStyledWithUtilsCustomCommand = () => {
               />
             </div>
 
-            <label className="font-semibold" htmlFor="outputType">
+            <label className="font-semibold text-gray-200" htmlFor="outputType">
               Output Type:
             </label>
             <select
@@ -90,7 +92,7 @@ const FfmpegFormStyledWithUtilsCustomCommand = () => {
           </>
         )}
 
-        <label className="font-semibold" htmlFor="fileInput">
+        <label className="font-semibold text-gray-200" htmlFor="fileInput">
           Upload file:
         </label>
         <input
