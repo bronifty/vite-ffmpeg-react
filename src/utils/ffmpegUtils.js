@@ -18,16 +18,17 @@ export const initializeFfmpeg = async () => {
 
 export const handleFFmpegOperations = async (event) => {
   await initializeFfmpeg();
+  const form = event.target;
   let imageObjectUrl = null;
   let videoObjectUrl = null;
   const returnObj = {
     imageObjectUrl,
     videoObjectUrl,
   };
-  const file = event.target.elements.fileInput.files[0];
+  const file = form.elements.fileInput.files[0];
   ffmpeg.FS("writeFile", file.name, await fetchFile(file));
 
-  if (event.target.elements.operation.value === "screenshot") {
+  if (form.elements.operation.value === "screenshot") {
     await ffmpeg.run(
       "-i",
       file.name,
@@ -43,7 +44,7 @@ export const handleFFmpegOperations = async (event) => {
     );
     returnObj.imageObjectUrl = fileUrl;
     // URL.revokeObjectURL(fileUrl);
-  } else if (event.target.elements.operation.value === "transcode") {
+  } else if (form.elements.operation.value === "transcode") {
     await ffmpeg.run("-i", file.name, "output.mp4");
 
     const data = ffmpeg.FS("readFile", "output.mp4");
@@ -54,6 +55,8 @@ export const handleFFmpegOperations = async (event) => {
 
     returnObj.videoObjectUrl = fileUrl;
     // URL.revokeObjectURL(fileUrl);
+  } else if (form.elements.customText.value) {
+    const commandText = form.elements.customText.value;
   }
   return returnObj;
 };
@@ -61,7 +64,7 @@ export const handleFFmpegOperations = async (event) => {
 //   // write the file to ffmpeg's virtual file system
 //   ffmpeg.FS("writeFile", file.name, await fetchFile(file));
 
-//   if (event.target.elements.operation.value === "screenshot") {
+//   if (form.elements.operation.value === "screenshot") {
 //     // run the ffmpeg command
 
 //     await ffmpeg.run(
@@ -83,7 +86,7 @@ export const handleFFmpegOperations = async (event) => {
 //     );
 
 //     setimageObjectUrl(url);
-//   } else if (event.target.elements.operation.value === "transcode") {
+//   } else if (form.elements.operation.value === "transcode") {
 //     // run the ffmpeg command
 
 //     await ffmpeg.run("-i", file.name, "output.mp4");
