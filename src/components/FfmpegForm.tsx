@@ -6,6 +6,9 @@ const FileUploadForm = () => {
   const [elementSrc, setElementSrc] = useState("");
 
   const handleSubmit = async (event) => {
+    // let resourcePath = "/ffmpeg-core.js";
+    // let url = new URL(resourcePath, document.location);
+    // console.log(url.toString());
     event.preventDefault();
     if (event.target.elements.fileInput.files.length > 0) {
       // get the file from the form input
@@ -17,6 +20,13 @@ const FileUploadForm = () => {
           corePath:
             "https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js",
         });
+        // let resourcePath = "/ffmpeg-core.js";
+        // let url = new URL(resourcePath, document.location);
+        // console.log(url.toString());
+        // ffmpeg = createFFmpeg({
+        //   // mainName: "main",
+        //   corePath: url.toString(),
+        // });
       }
       if (!ffmpeg.isLoaded()) {
         await ffmpeg.load();
