@@ -6,13 +6,14 @@ import MyVideoConverter from "./MyVideoConverter";
 import Ffmpeg from "./components/Ffmpeg";
 import Form from "./components/Form";
 import FfmpegFormStyled from "./components/FfmpegFormStyled";
+import FfmpegFormStyledWithUtils from "./components/FfmpegFormStyledWithUtils";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      <FfmpegFormStyled />
+      <FfmpegFormStyledWithUtils />
     </>
   );
 }

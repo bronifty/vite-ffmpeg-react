@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-const { createFFmpeg, fetchFile } = FFmpeg;
-let ffmpeg = null;
 
 const FfmpegFormStyled = () => {
   const [imgElementSrc, setImgElementSrc] = useState("");
   const [videoElementSrc, setVideoElementSrc] = useState("");
   const [message, setMessage] = useState("");
+
+  const { createFFmpeg, fetchFile } = FFmpeg;
+  let ffmpeg = null;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
