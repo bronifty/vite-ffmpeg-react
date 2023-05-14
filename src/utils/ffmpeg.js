@@ -1,4 +1,4 @@
-import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
+const { createFFmpeg, fetchFile } = FFmpeg;
 import path from "path";
 import fs from "fs";
 // order of args passed to ffmpeg.run() is important:

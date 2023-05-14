@@ -1,5 +1,5 @@
 import PQueue from "p-queue";
-import { runFFmpegJob } from "./ffmpeg.js";
+import { runFFmpegJob } from "./ffmpegUtils.js";
 const requestQueue = new PQueue({ concurrency: 1 });
 
 export async function parseCommand(commandCSV) {
@@ -73,6 +73,7 @@ const checkFileExtension = (file) => {
 
   console.log(`Output File: ${outputFile}`);
   console.log(`Media Type: ${mediaType}`);
+  return { mediaType };
 };
 
 export async function transformMedia({ file, command, API_ENDPOINT = null }) {
@@ -82,19 +83,22 @@ export async function transformMedia({ file, command, API_ENDPOINT = null }) {
   console.log("parsedCommand", parsedCommand, inputFile, outputFile);
 
   // compose the ffmpeg command
-  // await requestQueue.add(async () => {
-  //   const { outputData: tempData } = await runFFmpegJob({
-  //     parsedCommand,
-  //     inputFile,
-  //     outputFile,
-  //     mediaFile: file,
-  //   });
-  //   outputData = tempData;
-  // });
+  await requestQueue.add(async () => {
+    const { outputData: tempData } = await runFFmpegJob({
+      parsedCommand,
+      inputFile,
+      outputFile,
+      mediaFile: file,
+    });
+    outputData = tempData;
+  });
 
-  checkFileExtension(outputFile);
+  const { mediaType } = checkFileExtension(outputFile);
 
-  // const mediaBlog = new Blob([outputData.buffer], { type: "video/mp4" });
+  const mediaDataURL =
+    mediaType === "video"
+      ? new Blob([outputData.buffer], { type: "video/mp4" })
+      : new Blob([outputData.buffer], { type: "image/png" });
 
   // const res = await fetch(API_ENDPOINT, {
   //   method: "POST",
@@ -108,5 +112,5 @@ export async function transformMedia({ file, command, API_ENDPOINT = null }) {
   // const mediaBlog = await res.blob();
   // const media = await blobToDataURL(mediaBlog);
 
-  // return media;
+  return { mediaDataURL, mediaType };
 }

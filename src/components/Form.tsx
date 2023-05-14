@@ -28,17 +28,17 @@ const Form = () => {
 
   const handleOperationChange = (event) => {
     setOperation(event.target.value);
-    console.log(event.target.value);
+    // console.log(event.target.value);
   };
 
   const handlecustomCommandChange = (event) => {
     setCustomCommand(event.target.value);
-    console.log(event.target.value);
+    // console.log(event.target.value);
   };
 
   const handleOutputTypeChange = (event) => {
     setOutputType(event.target.value);
-    console.log(event.target.value);
+    // console.log(event.target.value);
   };
 
   return (

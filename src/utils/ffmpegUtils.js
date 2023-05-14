@@ -1,6 +1,80 @@
-import { blobToDataURL, transformMedia } from "./utils.js";
+// import { blobToDataURL, transformMedia } from "./utils.js";
 const { createFFmpeg, fetchFile } = FFmpeg;
 let ffmpeg = null;
+
+export async function parseCommand(commandCSV) {
+  // console.log("commandCSV", commandCSV);
+  // order of args passed to ffmpeg.run() is important:
+  // ffmpeg -ss <time> -i <input_file> -frames:v 1 <output_file>
+  // -ss, 00:00:01.000, -i, input.mov, -frames:v, 1, output.png
+  // "-i", "input.mov", "output.mp4"
+
+  const arrayWithoutSpaces = commandCSV.map((item) =>
+    item
+      .replace(
+        /`([^`]+)`|'([^']+)'|"([^"]+)"/g,
+        (match, templateQuotes, singleQuotes, doubleQuotes) =>
+          templateQuotes || singleQuotes || doubleQuotes
+      )
+      .trim()
+  );
+
+  const getFileNames = (array) => {
+    let inputFile, outputFile;
+    for (let i = 0; i < arrayWithoutSpaces.length; i++) {
+      if (arrayWithoutSpaces[i] === "-i" && i < arrayWithoutSpaces.length - 1) {
+        inputFile = arrayWithoutSpaces[i + 1];
+      }
+      if (i === arrayWithoutSpaces.length - 1) {
+        outputFile = arrayWithoutSpaces[i];
+      }
+    }
+    return { inputFile, outputFile };
+  };
+  const { inputFile, outputFile } = getFileNames(arrayWithoutSpaces);
+  return { parsedCommand: arrayWithoutSpaces, inputFile, outputFile };
+}
+
+export async function blobToDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.onabort = () => reject(new Error("Read aborted"));
+  });
+}
+
+const checkFileExtension = (file) => {
+  const outputFile = file; // Example file name, change it according to your scenario
+
+  const extension = outputFile
+    .substr(outputFile.lastIndexOf("."))
+    .toLowerCase();
+
+  let mediaType;
+
+  if (
+    extension === ".png" ||
+    extension === ".jpg" ||
+    extension === ".jpeg" ||
+    extension === ".gif"
+  ) {
+    mediaType = "image";
+  } else if (
+    extension === ".mp4" ||
+    extension === ".avi" ||
+    extension === ".mov"
+  ) {
+    mediaType = "video";
+  } else {
+    mediaType = "unknown";
+  }
+
+  console.log(`Output File: ${outputFile}`);
+  console.log(`Media Type: ${mediaType}`);
+  return { mediaType };
+};
 
 export const initializeFfmpeg = async () => {
   if (ffmpeg === null) {
@@ -27,6 +101,7 @@ export const handleFFmpegOperations = async (event) => {
     videoObjectUrl,
   };
   const file = form.elements.fileInput.files[0];
+  console.log(`file.name`, file.name);
 
   if (form.elements.operation.value === "screenshot") {
     ffmpeg.FS("writeFile", file.name, await fetchFile(file));
@@ -56,18 +131,146 @@ export const handleFFmpegOperations = async (event) => {
     const fileUrl = URL.createObjectURL(
       new Blob([data.buffer], { type: "video/mp4" })
     );
-
     returnObj.videoObjectUrl = fileUrl;
+
     ffmpeg.FS("unlink", file.name);
     ffmpeg.FS("unlink", "output.mp4");
     // URL.revokeObjectURL(fileUrl);
   } else if (form.elements.customCommand.value) {
     const commandText = form.elements.customCommand.value;
     const commandCSV = commandText.split(",");
-    console.log(`commandText = ${commandText}`);
-    transformMedia({ file, command: commandCSV });
+    console.log("commandCSV", commandCSV);
+
+    let outputData = null;
+    const { parsedCommand, inputFile, outputFile } = await parseCommand(
+      commandCSV
+    );
+    console.log(
+      "parsedCommand",
+      parsedCommand,
+      "inputFile",
+      inputFile,
+      "outputFile",
+      outputFile
+    );
+
+    // let outputData = null;
+    // await initializeFfmpeg();
+    ffmpeg.FS(
+      "writeFile",
+      inputFile,
+      await fetchFile(file)
+      // await fetchFile(path.join(process.cwd(), "./lib/input.mov"))
+    );
+
+    try {
+      await ffmpeg.run(...parsedCommand);
+    } catch (error) {
+      console.log("error", error);
+    }
+
+    const data = ffmpeg.FS("readFile", outputFile);
+
+    const fileUrl = URL.createObjectURL(
+      new Blob([data.buffer], { type: "video/mp4" })
+    );
+    returnObj.videoObjectUrl = fileUrl;
+    // const fileUrl = URL.createObjectURL(
+    //   new Blob([data.buffer], { type: "image/png" })
+    // );
+    // returnObj.imageObjectUrl = fileUrl;
+
+    // const { mediaType } = checkFileExtension(outputFile);
+    // const mediaDataURL =
+    //   mediaType === "video"
+    //     ? new Blob([outputData.buffer], { type: "video/mp4" })
+    //     : new Blob([outputData.buffer], { type: "image/png" });
+    // mediaType === "video"
+    //   ? (returnObj.videoObjectUrl = mediaDataURL)
+    //   : (returnObj.imageObjectUrl = mediaDataURL);
+
+    ffmpeg.FS("unlink", inputFile);
+    ffmpeg.FS("unlink", outputFile);
+
+    // ffmpeg.FS("writeFile", inputFile, await fetchFile(file));
+    // await ffmpeg.run(...commandCSV);
+    // const data = ffmpeg.FS("readFile", outputFile);
+
+    // // const fileUrl = URL.createObjectURL(
+    // //   new Blob([data.buffer], { type: "image/png" })
+    // // );
+    // ffmpeg.FS("unlink", inputFile);
+    // ffmpeg.FS("unlink", outputFile);
+
+    // await requestQueue.add(async () => {
+    //   const { outputData: tempData } = await runFFmpegJob({
+    //     parsedCommand,
+    //     inputFile,
+    //     outputFile,
+    //     mediaFile: file,
+    //   });
+    //   outputData = tempData;
+    // });
+
+    // const { mediaDataURL, mediaType } = transformMedia({
+    //   file,
+    //   command: commandCSV,
+    // });
+    // mediaType === "video"
+    //   ? (returnObj.videoObjectUrl = mediaDataURL)
+    //   : (returnObj.imageObjectUrl = mediaDataURL);
   }
   // ffmpeg.FS("unlink", inputFile);
   // ffmpeg.FS("unlink", outputFile);
   return returnObj;
 };
+
+// const initializeFFmeg = async () => {
+//   const ffmpegInstance = createFFmpeg({ log: true });
+//   let ffmpegLoadingPromise = ffmpegInstance.load();
+
+//   async function getFFmpeg() {
+//     if (ffmpegLoadingPromise) {
+//       await ffmpegLoadingPromise;
+//       ffmpegLoadingPromise = undefined;
+//     }
+//     return ffmpegInstance;
+//   }
+
+//   ffmpeg = await getFFmpeg();
+// };
+
+export async function runFFmpegJob({
+  parsedCommand,
+  inputFile,
+  outputFile,
+  mediaFile,
+}) {
+  let outputData = null;
+  await initializeFfmpeg();
+  ffmpeg.FS(
+    "writeFile",
+    inputFile,
+    await fetchFile(mediaFile)
+    // await fetchFile(path.join(process.cwd(), "./lib/input.mov"))
+  );
+
+  try {
+    await ffmpeg.run(...parsedCommand);
+  } catch (error) {
+    console.log("error", error);
+  }
+
+  outputData = ffmpeg.FS("readFile", outputFile);
+  ffmpeg.FS("unlink", inputFile);
+  ffmpeg.FS("unlink", outputFile);
+
+  // fs.writeFile(outputFile, outputData, "binary", (err) => {
+  //   if (err) {
+  //     console.error("Error writing the image file:", err);
+  //   } else {
+  //     console.log("Image file saved successfully:", outputFile);
+  //   }
+  // });
+  return { outputData };
+}
