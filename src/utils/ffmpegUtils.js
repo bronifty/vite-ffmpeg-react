@@ -73,7 +73,7 @@ const checkFileExtension = (file) => {
 
   console.log(`Output File: ${outputFile}`);
   console.log(`Media Type: ${mediaType}`);
-  return { mediaType };
+  return { mediaType: mediaType.trim() };
 };
 
 export const initializeFfmpeg = async () => {
@@ -154,33 +154,43 @@ export const handleFFmpegOperations = async (event) => {
       outputFile
     );
 
-    // let outputData = null;
-    // await initializeFfmpeg();
-    ffmpeg.FS(
-      "writeFile",
-      inputFile,
-      await fetchFile(file)
-      // await fetchFile(path.join(process.cwd(), "./lib/input.mov"))
-    );
-
+    // const runFFmpegJob2 = async () => {
+    ffmpeg.FS("writeFile", inputFile, await fetchFile(file));
     try {
       await ffmpeg.run(...parsedCommand);
     } catch (error) {
       console.log("error", error);
     }
+    outputData = ffmpeg.FS("readFile", outputFile);
+    ffmpeg.FS("unlink", inputFile);
+    ffmpeg.FS("unlink", outputFile);
 
-    const data = ffmpeg.FS("readFile", outputFile);
+    const { mediaType } = checkFileExtension(outputFile);
+    console.log(`mediaType`, mediaType);
+    if (mediaType === "video") {
+      const fileUrl = URL.createObjectURL(
+        new Blob([outputData.buffer], { type: "video/mp4" })
+      );
+      returnObj.videoObjectUrl = fileUrl;
+    } else if (mediaType === "image") {
+      const fileUrl = URL.createObjectURL(
+        new Blob([outputData.buffer], { type: "image/png" })
+      );
+      returnObj.imageObjectUrl = fileUrl;
+    }
 
-    const fileUrl = URL.createObjectURL(
-      new Blob([data.buffer], { type: "video/mp4" })
-    );
-    returnObj.videoObjectUrl = fileUrl;
+    // const fileUrl = URL.createObjectURL(
+    //   new Blob([outputData.buffer], { type: "video/mp4" })
+    // );
+    // returnObj.videoObjectUrl = fileUrl;
+    // };
+    // runFFmpegJob2();
+
     // const fileUrl = URL.createObjectURL(
     //   new Blob([data.buffer], { type: "image/png" })
     // );
     // returnObj.imageObjectUrl = fileUrl;
 
-    // const { mediaType } = checkFileExtension(outputFile);
     // const mediaDataURL =
     //   mediaType === "video"
     //     ? new Blob([outputData.buffer], { type: "video/mp4" })
@@ -188,9 +198,6 @@ export const handleFFmpegOperations = async (event) => {
     // mediaType === "video"
     //   ? (returnObj.videoObjectUrl = mediaDataURL)
     //   : (returnObj.imageObjectUrl = mediaDataURL);
-
-    ffmpeg.FS("unlink", inputFile);
-    ffmpeg.FS("unlink", outputFile);
 
     // ffmpeg.FS("writeFile", inputFile, await fetchFile(file));
     // await ffmpeg.run(...commandCSV);
