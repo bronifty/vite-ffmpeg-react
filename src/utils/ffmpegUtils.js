@@ -58,5 +58,7 @@ export const handleFFmpegOperations = async (event) => {
   } else if (form.elements.customText.value) {
     const commandText = form.elements.customText.value;
   }
+  // ffmpeg.FS("unlink", inputFile);
+  // ffmpeg.FS("unlink", outputFile);
   return returnObj;
 };
