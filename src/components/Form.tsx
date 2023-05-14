@@ -7,7 +7,6 @@ const Form = () => {
   const [message, setMessage] = useState("");
   const [operation, setOperation] = useState("screenshot");
   const [customCommand, setCustomCommand] = useState("");
-  const [outputType, setOutputType] = useState("image");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,11 +32,6 @@ const Form = () => {
 
   const handlecustomCommandChange = (event) => {
     setCustomCommand(event.target.value);
-    // console.log(event.target.value);
-  };
-
-  const handleOutputTypeChange = (event) => {
-    setOutputType(event.target.value);
     // console.log(event.target.value);
   };
 
@@ -78,19 +72,6 @@ const Form = () => {
                 className="p-2 mt-6 border h-36 border-gray-300 rounded custom-textfield"
               />
             </div>
-
-            <label className="font-semibold text-gray-200" htmlFor="outputType">
-              Output Type:
-            </label>
-            <select
-              id="outputType"
-              name="outputType"
-              className="p-2 border border-gray-300 rounded"
-              value={outputType}
-              onChange={handleOutputTypeChange}>
-              <option value="image">Image</option>
-              <option value="video">Video</option>
-            </select>
           </>
         )}
 
