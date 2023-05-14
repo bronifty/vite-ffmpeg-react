@@ -5,7 +5,7 @@ const Form = () => {
   const [imgElementSrc, setImgElementSrc] = useState("");
   const [videoElementSrc, setVideoElementSrc] = useState("");
   const [message, setMessage] = useState("");
-  const [operation, setOperation] = useState("transcode");
+  const [operation, setOperation] = useState("screenshot");
   const [customCommand, setCustomCommand] = useState("");
   const [outputType, setOutputType] = useState("image");
 
@@ -45,6 +45,7 @@ const Form = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900">
       <form
         id="mediaForm"
+        name="mediaForm"
         onSubmit={handleSubmit}
         className="grid gap-6 p-8 mt-5 bg-gray-900 rounded shadow-lg w-96">
         <label className="font-semibold text-gray-200" htmlFor="operation">
@@ -52,11 +53,12 @@ const Form = () => {
         </label>
         <select
           id="operation"
+          name="operation"
           value={operation}
           onChange={handleOperationChange}
           className="p-2 border border-gray-300 rounded">
-          <option value="transcode">Transcode</option>
           <option value="screenshot">Screenshot</option>
+          <option value="transcode">Transcode</option>
           <option value="custom">Custom</option>
         </select>
 
@@ -97,8 +99,8 @@ const Form = () => {
         </label>
         <input
           id="fileInput"
-          type="file"
           name="fileInput"
+          type="file"
           className="p-2 border border-gray-300 rounded"
         />
 

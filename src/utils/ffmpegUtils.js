@@ -1,3 +1,4 @@
+import { blobToDataURL, transformMedia } from "./utils.js";
 const { createFFmpeg, fetchFile } = FFmpeg;
 let ffmpeg = null;
 
@@ -26,9 +27,9 @@ export const handleFFmpegOperations = async (event) => {
     videoObjectUrl,
   };
   const file = form.elements.fileInput.files[0];
-  ffmpeg.FS("writeFile", file.name, await fetchFile(file));
 
   if (form.elements.operation.value === "screenshot") {
+    ffmpeg.FS("writeFile", file.name, await fetchFile(file));
     await ffmpeg.run(
       "-i",
       file.name,
@@ -43,8 +44,11 @@ export const handleFFmpegOperations = async (event) => {
       new Blob([data.buffer], { type: "image/png" })
     );
     returnObj.imageObjectUrl = fileUrl;
+    ffmpeg.FS("unlink", file.name);
+    ffmpeg.FS("unlink", "output.png");
     // URL.revokeObjectURL(fileUrl);
   } else if (form.elements.operation.value === "transcode") {
+    ffmpeg.FS("writeFile", file.name, await fetchFile(file));
     await ffmpeg.run("-i", file.name, "output.mp4");
 
     const data = ffmpeg.FS("readFile", "output.mp4");
@@ -54,9 +58,13 @@ export const handleFFmpegOperations = async (event) => {
     );
 
     returnObj.videoObjectUrl = fileUrl;
+    ffmpeg.FS("unlink", file.name);
+    ffmpeg.FS("unlink", "output.mp4");
     // URL.revokeObjectURL(fileUrl);
-  } else if (form.elements.customText.value) {
-    const commandText = form.elements.customText.value;
+  } else if (form.elements.customCommand.value) {
+    const commandText = form.elements.customCommand.value;
+    console.log(`commandText = ${commandText}`);
+    transformMedia({ file, command: commandText });
   }
   // ffmpeg.FS("unlink", inputFile);
   // ffmpeg.FS("unlink", outputFile);
