@@ -47,17 +47,18 @@ export async function blobToDataURL(blob) {
 export async function transformMedia({ file, command, API_ENDPOINT = null }) {
   const { parsedCommand, inputFile, outputFile } = await parseCommand(command);
 
-  const res = await fetch(API_ENDPOINT, {
-    method: "POST",
-    body: payload,
-  });
+  console.log("parsedCommand", parsedCommand, inputFile, outputFile);
+  // const res = await fetch(API_ENDPOINT, {
+  //   method: "POST",
+  //   body: payload,
+  // });
 
-  if (!res.ok) {
-    throw new Error("Creating thumbnail failed");
-  }
+  // if (!res.ok) {
+  //   throw new Error("Creating thumbnail failed");
+  // }
 
-  const mediaBlog = await res.blob();
-  const media = await blobToDataURL(mediaBlog);
+  // const mediaBlog = await res.blob();
+  // const media = await blobToDataURL(mediaBlog);
 
-  return media;
+  // return media;
 }

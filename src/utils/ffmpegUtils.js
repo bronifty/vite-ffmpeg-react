@@ -63,8 +63,9 @@ export const handleFFmpegOperations = async (event) => {
     // URL.revokeObjectURL(fileUrl);
   } else if (form.elements.customCommand.value) {
     const commandText = form.elements.customCommand.value;
-    console.log(`commandText = ${commandText}`);
-    transformMedia({ file, command: commandText });
+    const commandCSV = commandText.split(" ");
+    // console.log(`commandText = ${commandText}`);
+    transformMedia({ file, command: commandCSV });
   }
   // ffmpeg.FS("unlink", inputFile);
   // ffmpeg.FS("unlink", outputFile);
