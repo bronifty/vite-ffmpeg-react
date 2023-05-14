@@ -1,5 +1,6 @@
 import PQueue from "p-queue";
 import { runFFmpegJob } from "./ffmpeg.js";
+const requestQueue = new PQueue({ concurrency: 1 });
 
 export async function parseCommand(commandCSV) {
   console.log("commandCSV", commandCSV);
@@ -44,10 +45,57 @@ export async function blobToDataURL(blob) {
   });
 }
 
+const checkFileExtension = (file) => {
+  const outputFile = file; // Example file name, change it according to your scenario
+
+  const extension = outputFile
+    .substr(outputFile.lastIndexOf("."))
+    .toLowerCase();
+
+  let mediaType;
+
+  if (
+    extension === ".png" ||
+    extension === ".jpg" ||
+    extension === ".jpeg" ||
+    extension === ".gif"
+  ) {
+    mediaType = "image";
+  } else if (
+    extension === ".mp4" ||
+    extension === ".avi" ||
+    extension === ".mov"
+  ) {
+    mediaType = "video";
+  } else {
+    mediaType = "unknown";
+  }
+
+  console.log(`Output File: ${outputFile}`);
+  console.log(`Media Type: ${mediaType}`);
+};
+
 export async function transformMedia({ file, command, API_ENDPOINT = null }) {
   const { parsedCommand, inputFile, outputFile } = await parseCommand(command);
+  let outputData = null;
 
   console.log("parsedCommand", parsedCommand, inputFile, outputFile);
+
+  // compose the ffmpeg command
+  // await requestQueue.add(async () => {
+  //   const { outputData: tempData } = await runFFmpegJob({
+  //     parsedCommand,
+  //     inputFile,
+  //     outputFile,
+  //     mediaFile: file,
+  //   });
+  //   outputData = tempData;
+  // });
+
+  checkFileExtension(outputFile);
+
+  // const mediaBlog = new Blob([outputData.buffer], { type: "video/mp4" });
+
   // const res = await fetch(API_ENDPOINT, {
   //   method: "POST",
   //   body: payload,
